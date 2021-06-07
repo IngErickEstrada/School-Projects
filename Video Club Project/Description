@@ -1,0 +1,21 @@
+The project is developed in C++ and simulates the rental and sale of movies and / or video games.
+Processes that the system performs:
+- Login to the system through a password.
+- Registration of movies, video games, customers and employees.
+- Consultation of movies, video games, customers and employees by name or id.
+- To be able to modify movies, video games and employees.
+- Reports to validate the movies and/or video games that have been rented, sold or are available at the moment.
+- List of customers and employees that are registered in the system.
+
+The system is implemented in the system:
+- Classes and abstract classes 
+- Use of dynamic memory 
+- Use of pointers 
+- Attributes and Methods (public, private and protected) 
+- Method overloading and redefinition 
+- Objects 
+- Constructors and destructors in each class. 
+- Inheritance 
+- Polymorphism. 
+- Friendly, virtual, pure virtual, static, constant functions. 
+- File handling 
