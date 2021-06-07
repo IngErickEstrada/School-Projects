@@ -1,0 +1,56 @@
+							/*Usuarios*/
+CREATE PROCEDURE AgregarUsuarios (IN id INT(3), IN User VARCHAR(10), IN Pass VARCHAR(8), IN Perfil VARCHAR(15), IN Name VARCHAR(50), IN Sex VARCHAR(10), IN Edad INT(2), IN Tel INT(2), IN Correo VARCHAR(30)) BEGIN INSERT INTO usuarios VALUES (id_Usuario,User,Pass,Perfil,Name,Sex,Edad,Tel,Correo); end//
+
+CREATE PROCEDURE ModificarUsuario (IN id INT(3), IN User VARCHAR(8), IN Pass VARCHAR(8), IN Per VARCHAR(15), IN Name VARCHAR(50), IN Sex VARCHAR(10), IN Ed INT(2), IN Tel INT(10), IN Email VARCHAR(30)) BEGIN UPDATE usuarios as u SET u.nombre_usuario=User, u.contrasena=Pass, u.perfil=Per, u.nombre=Name, u.sexo=Sex, u.edad=Ed, u.telefono=Tel, u.correo=Email WHERE u.id_usuario=id; end//
+
+CREATE PROCEDURE BorrarUsuario (IN id INT(3)) BEGIN DELETE usuarios FROM usuarios WHERE usuarios.id_Usuario=id; end//
+
+CREATE PROCEDURE BuscarUsuario (IN id INT(3)) BEGIN SELECT * FROM usuarios as u WHERE u.id_Usuario=id; end//
+
+							 /*Menu*/
+CREATE PROCEDURE AgregarMenu (IN id INT(3), IN Categoria VARCHAR(20), IN Pastel VARCHAR(20), IN Precio FLOAT) BEGIN INSERT INTO menu VALUES (id,Categoria,Pastel,Precio); end// 
+
+CREATE PROCEDURE ModificarMenu (IN id INT(3), IN Ctg VARCHAR(20), IN Ptel VARCHAR(20), IN Pres FLOAT) BEGIN UPDATE menu as m SET m.categoria=Ctg, m.pastel=Ptel, m.precio=Pres WHERE m.id_menu=id; end//
+
+CREATE PROCEDURE BorrarMenu (IN id INT(3)) BEGIN DELETE menu FROM menu WHERE menu.id_Menu=id; end// 
+
+CREATE PROCEDURE BuscarMenu (IN id INT(3)) BEGIN SELECT * FROM menu as m WHERE m.id_Menu=id; end//
+
+							/*Almacen*/
+CREATE PROCEDURE AgregarAlmacen (IN id INT(3), IN Pastel VARCHAR(20), IN Stock INT(3)) BEGIN INSERT INTO almacen VALUES (id,Pastel,Stock); end//
+
+CREATE PROCEDURE ModificarAlmacen (IN id INT(3), IN Ptel VARCHAR(20), IN Stock INT(3)) BEGIN UPDATE almacen as a SET a.pastel=Ptel, a.existencia=Stock WHERE a.id_almacen=id; end//
+
+CREATE PROCEDURE BorrarAlmacen (IN id INT(3)) BEGIN DELETE almacen FROM almacen WHERE almacen.id_Almacen=id; end//
+
+CREATE PROCEDURE BuscarAlmacen (IN id INT(3)) BEGIN SELECT * FROM almacen as a WHERE a.id_Almacen=id; end//
+
+CREATE PROCEDURE Venta_Almacen () begin UPDATE almacen as a INNER JOIN pasteles as p ON a.id_Almacen=p.id_Almacen INNER JOIN ventas as v ON p.id_Pastel=v.id_Pastel SET a.Existencia=(a.Existencia-v.Cantidad); end//
+
+						       /*Pasteles*/
+CREATE PROCEDURE AgregarPasteles (IN idP INT(3), IN idM INT(3), IN idA INT(3)) BEGIN INSERT INTO pasteles VALUES (idP,idM,idA); end//
+
+CREATE PROCEDURE BorrarPasteles (IN idP INT(3)) BEGIN DELETE pasteles FROM pasteles WHERE pasteles.id_Pastel=idP; end//
+
+CREATE PROCEDURE BuscarPasteles (IN idP INT(3)) BEGIN SELECT * FROM pasteles as p WHERE p.id_Pastel=idP; end//
+
+							/*Facturas*/
+CREATE PROCEDURE AgregarFactura (IN idF INT(3), IN idU INT(3), IN Fact INT(5), IN Date DATETIME) BEGIN INSERT INTO facturas VALUES (id_Factura,idU,Fact,NOW()); end//
+
+CREATE PROCEDURE BorrarFactura (IN id INT(3)) BEGIN DELETE facturas FROM facturas WHERE facturas.id_Factura=id; end//
+
+CREATE PROCEDURE BuscarFactura (IN id INT(3)) BEGIN SELECT * FROM facturas as f WHERE f.id_Factura=id; end//
+
+							/*Ventas*/
+CREATE PROCEDURE AgregarVenta (IN idV INT(3), IN idP INT(3), IN idF INT(3), IN Cant INT(3), IN Tot FLOAT) BEGIN INSERT INTO ventas VALUES (id_Venta,idP,idF,Cant,Tot,); end//
+
+CREATE PROCEDURE BorrarVenta (IN id INT(3)) BEGIN DELETE ventas_realizadas FROM ventas_realizadas WHERE ventas_realizadas.id_Venta=id; end//
+
+CREATE PROCEDURE BuscarVenta (IN id INT(3)) BEGIN SELECT * FROM ventas_realizadas as v WHERE v.id_Venta=id; end//
+
+						   /*Ventas Realizadas*/
+CREATE PROCEDURE VentaRealizada (IN id INT(3)) BEGIN DELETE ventas FROM ventas WHERE ventas.id_Venta=id; end//
+
+CREATE PROCEDURE VentaConcretada (IN idV INT(3), IN idP INT(3), IN idF INT(3), IN Cant INT(3), IN Tot FLOAT, IN Fecha DATETIME) BEGIN INSERT INTO ventas_realizadas VALUES (idV,idP,idF,Cant,Tot,NOW()); end// 
+
+CREATE TRIGGER RealizarVenta_AD AFTER DELETE ON ventas FOR EACH ROW INSERT INTO ventas_realizadas (id_Venta,id_Pastel,id_Factura,Cantidad,Total,Fecha_Venta) VALUES (OLD.id_Venta,OLD.id_Pastel,OLD.id_Factura,OLD.Cantidad,OLD.Total,NOW());  
