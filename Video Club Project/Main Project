@@ -1,0 +1,1304 @@
+using namespace std;
+
+//LIBRERIAS O CABECERAS
+#include <iostream>		//ENTRADA SALIDA DE DATOS
+#include <conio.h>		//FUNCIONES SYSTEM, GETCH, ETC
+#include <windows.h>	//AGREGAR COLOR, CORDENADAS PARA UN GOTOXY, SLEEP, ETC
+#include <stdlib.h> 	//FUNCION SYSTEM FUNCION EXIT
+#include <string>		//FUNCIONES PARA DE CADENAS DE CARACTERES (STRINGS)
+#include <fstream>		//CONTROL DE ARCHIVOS
+#include <sstream>		//CONVERSION A STRINGS
+
+//DEFINICIONES DE COLORES Y TECLAS CON CODIGO ASCII
+#define Color_Verde 10
+#define Color_Rojo 12
+#define Color_Def 15
+#define Tecla_Arriba 72
+#define Tecla_Abajo 80
+#define Tecla_Enter 13
+#define Tecla_Esc 27
+
+//ARCHIVOS .CPP 
+#include "Gotoxy.cpp"		//FUNCION DE POCICIONAMIENTO EN UN PLANO DE SEGUNDA DIMENCION: X , Y
+#include "Titulo.cpp"		//FUNCION HACER Y MOSTRAR TITULO
+#include "Persona.cpp"		//CLASE PADRE DE CLIENTES Y EMPLEADOS
+#include "Clientes.cpp"		//CLASE HIJA DE PERSONA
+#include "Empleados.cpp"	//CLASE HIJA DE PERSONA
+#include "PeliVid.cpp"		//CLASE PADRE DE PELICULAS Y VIDEOJUEGOS
+#include "Videojuegos.cpp"	//CLASE HIJA DE PELIVID
+#include "Peliculas.cpp"	//CLASE HIJA DE PELIVID
+
+//ESTRUCTURA PARA ALMACENAR DATOS, PARA LOS PRECIOS Y PODER HACER LAS COMPRAS Y/O RENTAS
+struct sRenta{	double Precio_Renta, TotalR;};
+struct sVenta{	double Precio_Venta, TotalV;};
+
+//FUNCIONES
+int Menu_Principal();		//MOSTRAR Y ESCOJER LAS OPCIONES DEL MENU, RETORNA UN ENTERO PARA SABER CUAL OPCION SE ESCOJIO
+int Menu_Renta_Venta();		//MOSTRAR Y ESCOJER LAS OPCIONES DEL MENU, RETORNA UN ENTERO PARA SABER CUAL OPCION SE ESCOJIO
+void main_renta_venta();	//RECIVE LA OPCION DEL MENU Y EJECUTA LA FUNCION CORRESPONDIENTE
+int Menu_P_V();				//MOSTRAR Y ESCOJER LAS OPCIONES DEL MENU, RETORNA UN ENTERO PARA SABER CUAL OPCION SE ESCOJIO
+int main_p_v();				//RECIVE LA OPCION DEL MENU Y EJECUTA LA FUNCION CORRESPONDIENTE, RETORNA UN ENTERO PARA SABER CUAL OPCION SE ESCOJIO
+int Renta_Venta(string, sRenta [], sVenta [], int , int , string);
+/*
+	FUNCION DONDE SE HACE TODA LA VENTA Y/O RENTA, SE MODIFICAN ARCHIVOS COMO LAS COMICIONES DEL EMPLEADO
+	CANTIDAD DE COPIAS EN PELICULAS Y/O VIDEOJUEGOS, SE CAMBIA LAS CANTIDADES DE LOS ESTATUS DEL LOS ARCHIVOS
+	DE LOS REPORTES DE DISPONIBLE TANTO PARA PELICULAS COMO PARA VIDEOJUEGOS
+	MAS ADELANTE SE EXPLICAN LOS PARAMETROS
+	
+*/
+void Estatus();				//CAMBIAR EL ESTATUS DEL ARCHIVO DE PELICULAS Y VIDEOJUEGOS DE DISPONIBLE A NO DISPONIBLE
+void Mod_Rep_Disp(string, string, string);
+
+//MAIN
+int main()
+{
+	int tecla, tecla2, X, Y, cont=1;
+	char caracter;
+	string pass, pass_archivo; //CADENA PARA LA CONTRASEÑA
+	ifstream archivo; //SACAR O LEER LA INFORMACION DE UN ARCHIVO
+	
+	system("mode con: cols=114 lines=40");
+	
+	archivo.open("Pass.txt",ios::in); //FUNCION PARA ABRIR ARCHIVOS
+	
+	if(archivo.fail()) //FUNCION DONDE SI EL ARCHIVO NO SE PUDO ABRIR MANDA UN MENSAJE DE ERROR, Y SE CIERRA EL PROGRAMA
+	{
+		cout<<"NO SE PUDO ABRIR EL ARCHIVO / ARCHIVO NO ENCONTRADO"<<endl;	exit(1);
+	}
+	
+	archivo>>pass_archivo; //SACAR INFORMACION DEL ARCHIVO EN PALABRAS, POR MEDIO DE LOS ITERADORES MAYOR Y MENOR QUE
+	
+	do	//DO-WHILE QUE NOS SIRVE PARA QUE SE PUEDA INGRESAR LA CONTRASEÑA HASTA 3 VECES, SI SE FALLAN LAS TRES CE CIERRA EL PROGRAMA
+	{
+		Titulo(); //SE LLAMA A LA FUNCION DONDE SE IMPRIME EL TITULO
+		gotoxy (1, 13);	//SE LLAMA A LA FUNCION DE POSCICIONAMIENTO DEL ARCHIVO GOTOXY
+		cout<<"INGRESE LA CONTRASE\245A PARA INGRESAR AL SISTEMA (SI LA INGRESA 3 VECES ERRONEA SE CERRARA EL PROGRAMA)"<<endl;
+		gotoxy (1, 14);	caracter=getch();	//LA VARIABLE CARACTER GUARDA EL CODIGO ASCII DE LA TECLA QUE PRECIONEMOS
+		pass="";
+		gotoxy (1, 14);
+		while(caracter != 13)	//ESTE WHILE NOS SIRVE PARA QUE AL MOMENTO DE PONER LA CONTRASEÑA APAREZCAN ASTERISCOS. MIENTRAS LA TECLA QUE PRECIONAMOS SEA DIFERENTE DE 13(TECLA DE ENTER CODIGO ASCII)
+		{
+			if(caracter == 8) //SI LA TECLA QUE SE PRECIONO FUE 8(TECLA DE RETROCESO EN ASCII) ENTONCES SE ELIMINA TANTO UN ASTERISCO COMO UN CARACTER DENTRO DE LA CADENA PASS
+			{
+				if(pass.length() > 0) //SI EL TAMAÑO DE NUESTRA CADENA ES MAYOR A 0, ENTONCE SE PUEDE HACER UN BORRADO DE ASTERISCO COMO DE CARACTER
+				{
+					cout<<"\b \b"; //SECUENCIA DE ESCAPE DE RETROCESO PARA ELIMINAR UN ASTERISCO
+					pass=pass.substr(0,pass.length()-1); //SE LE QUITA EL ULTIMO CARACTER UNGRSADO A NUESTRA CADENA
+				}
+			}
+			else	//SI LA TECLA FUE DIFERENTE DEL RETROCESO
+			{
+				pass.push_back(caracter);	//SE AGREGA EL NUEVO CARACTER AL FINAL DE LO QUE SE TENIA
+				cout<<"*";	//SE MUESTRA EN PANTALLA LOS ASTERISCOS
+			}
+			caracter=getch(); //VOLVEMOS A GUARDAR LA TECLA QUE PRECIONAMOS HASTA QUE SE TERMINE EL BUCLE CUANDO SE PRECIONA ENTER
+		}
+		
+		if(pass == pass_archivo) //SI PAS QUE ES LA CONTRASEÑA QUE INGRESAMOS EN EJECUCION ES IGUAL A LA QUE SE TIENE GUARDADO EN EL ARCHIVO
+		{
+			archivo.close();	//FUNCION PARA CERRAR EL ARCHIVO QUE SE HABRIO CON ANTERIORIDAD
+			Titulo();
+			sndPlaySound("InicioSesion.wav",0);	//FUNCION QUE NOS PERMITE REPRODUCIR UN SONIDO EN LA EJECUCION DEL PROGRAMA
+			
+			for(;;)	//BUCLE INFINITO PARA EL MENU DINAMICO HASTA QUE SE UTILICE LA OPCION DE SALIDA
+			{
+				switch (Menu_Principal())	//SE LLAMA A LA FUNCION PARA ESCOJER UNA OPCION LA CUAL RETORNA UN ENTERO PARA LOS CASOS
+        		{
+	            	case 1:	main_cliente(); 	break;
+    	        	case 2:	main_empleado();	break;
+        	    	case 3:	main_pelicula();	break;
+            		case 4:	main_videojuego();	break;
+            		case 5:	main_renta_venta();	break;
+	            	case 6: system("cls");	sndPlaySound("CerrandoSesion.wav",0);	exit(1);	break;
+        		}
+			}
+		}
+		else
+		{
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Rojo); //FUNCION PARA AGREGAR COLOR AL TEXTO EN LA EJECUCION DEL PROGRAMA
+			gotoxy (1, 16);
+			cout<<"CONTRASE\245A INCORRECTA ("<<cont<<")"<<endl;	sndPlaySound("Error.wav",0);	Sleep(1250);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+			cont++; // CONTAOR PARA AUMENTAR CADA VEZ QUE EL USUARIO METE LA CONTRASEÑA INCORRECTAMENTE
+		}
+	}while(cont < 4);
+}
+
+int Menu_Principal()
+{
+	int tecla, X, Y, Cursor_Pos=15; //TECLA GUARDAR UN VALOR ASCII PERO COMO ENTERO, X Y Y PARA LAS POCICIONES DEL GOTOXY
+									//CURSOR_POS PARA INICIALIZAR NUESTRA FLECHA EN LA POCICION Y-15 EN NUESTRA PANTALLA, QUE ES DONDE EMPIEZAN LAS OPCIONES		
+	system("cls");
+	Titulo();
+	
+	//MOSTRAR OPCIONES DEL MENU
+	gotoxy (1, 13);	cout<<"MENU PRINCIPAL";
+	gotoxy (2, 15);	cout<<"1.- CLIENTES (TERMINADO)";
+	gotoxy (2, 17);	cout<<"2.- EMPLEADOS (TERMINADO)";
+	gotoxy (2, 19);	cout<<"3.- PELICULAS (TERMINADO)";
+	gotoxy (2, 21);	cout<<"4.- VIDEOJUEGOS (TERMINADO)";
+	gotoxy (2, 23);	cout<<"5.- REALIZAR RENTA/VENTA";
+	gotoxy (2, 25);	cout<<"6.- SALIR DEL SISTEMA";
+		
+		gotoxy(3,29);	cout<<"UTILICE LAS TECLAS DE SELECCION Y ENTER PARA SELECCIONAR UNA OPCION, ESC PARA SALIR";
+		
+		gotoxy (0, Cursor_Pos);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+		cout<<(char)175; //LA FECHA DE SELECCION DEL MENU
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+		gotoxy(0,39);
+		
+		do //DO-WHILE QUE MIETRAS DENTRO DEL DO SE SELECCIONE UNA DECLA DIFERENTE DE 27(TECLA ESC CODIGO ASCII) SE VA A REPETIR Y A SELECCIONAR OTRA OPCION
+		{
+			if(kbhit()) //kbhit() PARA SABER SI SE PRECIONA ALGUNA TECLA
+			{
+				tecla = getch(); //GUARTAR EL CODIGO ASCII COMO ENTERO
+				
+				switch(tecla)	//TECLA QUE PRECIONAMOS
+				{
+					//ESTA VARIABLES ESTAN DEFINIDAS CON SU CODIGO ASCII EN LA PARTE SUPERIOR
+					case Tecla_Arriba:	if(Cursor_Pos >= 15) Cursor_Pos -= 2;	//SI LA POSICION DEL CURSOR EL MAYOR O IGUAL A 15 SE REDUCEN 2 POSICIONES
+										if(Cursor_Pos <15) Cursor_Pos = 25;		//SI LA POSICION DEL CURSOR ES MENOR AL 15 SE MUEVE HASTA LA POSICION 25
+										break;
+					
+					case Tecla_Abajo:	if(Cursor_Pos <= 25) Cursor_Pos += 2;	//SI LA POSICION DEL CURSOR EL MENOR O IGUAL A 25 SE AUMENTAN 2 POSICIONES
+										if(Cursor_Pos >25) Cursor_Pos = 15;		//SI LA POSICION DEL CURSOR ES MAYOR AL	25 SE MUEVE HASTA LA POSICION 15
+					 					break;
+					
+					case Tecla_Enter:	//CUANTO SE PRECIONA ENTER VERIFICA EN QUE POSCICION ESTA EL CURSOR
+                	{
+                    	switch (Cursor_Pos)	//Y LA METE EN EL SWITCH COMO UNA OPCION PARA RETORNAR UN VALOR QUE SERA ALGUNA DEL MENU ANTERIOR
+                    	{
+                        	case 15: return 1; break;
+                        	case 17: return 2; break;
+                        	case 19: return 3; break;
+                        	case 21: return 4; break;
+                        	case 23: return 5; break;
+                        	case 25: return 6; break;
+                    	}
+                	}
+                	break;
+                	
+                	case Tecla_Esc: return 6; break;	//SI LA TECLA QUE SE PRECIONO FUE ESC MANDA UN 6 PARA SALIR
+				}
+				
+				for (int i = 0; i<13 ; i+=2) //ESTE FOR SIRVE PARA QUE CADA QUE AVANCE O SE REDUZCA UNA POCICION DEL CURSOR ESTA SE BORRE Y QUEDE LA NUEVA
+            	{
+                	gotoxy (0,15+i);
+                	cout << (char) 0;
+            	}
+            	
+            	gotoxy (0, Cursor_Pos);
+		 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+				cout<<(char)175;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+				gotoxy(0,39);
+				
+			}
+			
+		}while(tecla != 27);
+	return 6;
+}
+
+int Menu_Renta_Venta()
+{
+	int tecla, X, Y, Cursor_Pos=15;
+	
+	system("cls");
+	Titulo();
+	
+	gotoxy (1, 13);	cout<<"MENU RENTA / VENTA";
+	gotoxy (2, 15);	cout<<"1.- RENTA";
+	gotoxy (2, 17);	cout<<"2.- VENTA";
+	gotoxy (2, 19);	cout<<"3.- CANCELAR";
+		
+		gotoxy(3,23);	cout<<"UTILICE LAS TECLAS DE SELECCION Y ENTER PARA SELECCIONAR UNA OPCION, ESC PARA REGRESAR";
+		
+		gotoxy (0, Cursor_Pos);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+		cout<<(char)175;
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+		gotoxy(0,39);
+		
+		do
+		{
+			if(kbhit()) //kbhit() sirve para saber si se presiono alguna tecla
+			{
+				tecla = getch();
+				
+				switch(tecla)
+				{
+					case Tecla_Arriba:	if(Cursor_Pos >= 15) Cursor_Pos -= 2;
+										if(Cursor_Pos <15) Cursor_Pos = 19;
+										break;
+					
+					case Tecla_Abajo:	if(Cursor_Pos <= 19) Cursor_Pos += 2;
+										if(Cursor_Pos >19) Cursor_Pos = 15;
+					 					break;
+					
+					case Tecla_Enter:
+                	{
+                    	switch (Cursor_Pos)
+                    	{
+                        	case 15: return 1; break;
+                        	case 17: return 2; break;
+                        	case 19: return 3; break;
+                    	}
+                	}
+                	break;
+                	
+                	case Tecla_Esc: return 3; break;
+				}
+				
+				for (int i = 0; i<13 ; i+=2)
+            	{
+                	gotoxy (0,15+i);
+                	cout << (char) 0;
+            	}
+            	
+            	gotoxy (0, Cursor_Pos);
+		 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+				cout<<(char)175;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+				gotoxy(0,39);
+				
+			}
+			
+		}while(tecla != 27);
+	return 3;
+}
+
+void main_renta_venta()
+{
+	bool band=false, vacioE=false, vacioC=false, encontroC=false, encontroE=false;	//EN EL MENU HAY UNA OPCION DE CANCELAR EN VES DE SALIR, PARA ESO ES BAND, PARA QUE SE TERMINE EL CICLO DEL FOR INFINITO EN VEZ DE SALIRSE
+	string texto, texto2="Codigo:", _codigo, _codigo2, palabra;
+	int contR=0, contV=0, cont=0, x;
+	ifstream archivo, archivoo;	//SACAR O LEER LA INFORMACION DE UN ARCHIVO
+	ofstream archivoAux;		//METER O GUARDAR LA INFORMACION A UN ARCHIVO
+	sRenta renta[100];	//ESTRUCTURA DE RENTA PARA GUARDAR LOS VALORES FLOTANTES DE LOS ARCHIVOS Y PODER HACER OPERACIONES (CUANDO SON RENTA)
+	sVenta venta[100];	//ESTRUCTURA DE RENTA PARA GUARDAR LOS VALORES FLOTANTES DE LOS ARCHIVOS Y PODER HACER OPERACIONES (CUANDO SON VENTA)
+	
+	system("cls");	Titulo();
+	
+	archivo.open("Empleados.txt", ios::in);
+	archivoo.open("Clientes.txt", ios::in);
+	if(archivo.fail() || archivoo.fail())
+	{
+		system("cls");	Titulo();
+		gotoxy (1, 13);	cout<<"EL ARCHIVO NO ESTA O NO SE ENCUENTRA";
+		sndPlaySound("Error.wav",0);
+		getch();
+	}
+	else
+	{
+		//ESTA PARTE SIRVE PARA SABER SI EL ARCHIVO ESTA VACIO O NO, MAS ADELANTE NOS SIRVE PARA SABER SI HAY CLIENTES Y EMPLEADO, EN CASO DE QUE NO NO SE PUEDE HACER UNA RENTA O VENTA
+		archivo>>texto;	if(texto.compare(texto2)!=0) vacioE=true;		//DEL ARCHIVO EMPLEADOS SE SACA LA PRIMER PALABRA, SI LA COMPARACION ES DIFERENTE DE 0 QUIERE DECIR QUE NO HAY INFORMACION POR LO TANTO VACIOE SE VUELVE VERDADERO OSEASE QUE SI ESTA VACIO (EMPLEADOS)
+		archivoo>>texto;	if(texto.compare(texto2)!=0) vacioC=true;	//DEL ARCHIVO EMPLEADOS SE SACA LA PRIMER PALABRA, SI LA COMPARACION ES DIFERENTE DE 0 QUIERE DECIR QUE NO HAY INFORMACION POR LO TANTO VACIOE SE VUELVE VERDADERO OSEASE QUE SI ESTA VACIO (CLIENTES)
+	}
+	archivo.close();
+	archivoo.close();
+	
+	if(vacioE==true && vacioC==true) //SI MIS DOS ARCHIVOS ESTAN VACIOS O ALGUNO DE LOS DOS ESTA VACIO MANDA UN MENSAJE QUE ES EL SIGUIENTE
+	{
+		system("cls");	Titulo();
+		gotoxy (1, 13);	cout<<"ARCHIVOS VACIOS, PARA HACER UNA RENTA O VENTA TIENE QUE AVER POR LO MENOS";
+		gotoxy (1, 14);	cout<<"UN CLIENTE Y UN EMPLEADO REGISTRADO, SI ALGUNO DE ELLOS NO LO ESTA";
+		gotoxy (1, 15);	cout<<"REGISTRELO PARA PODER CONTINUAR CON LA RENTA O LA VENTA";
+		gotoxy (1, 17);	cout<<"GRACIAS";
+		getch();
+	}
+	else
+	{
+		system("cls");	Titulo();
+		gotoxy (1, 13);	cout<<"INGRESE EL CODIGO DEL EMPLEADO";
+		fflush(stdin);	//FUNCION PARA LIMPIAR EL BUFFER DE MEMORIA
+		gotoxy (1, 14);	getline(cin, _codigo);
+		_codigo="Codigo: "+_codigo;	//LOS ESTRINGS PUEDEN UNURSE MEDIANTE EL SIGNO DE MASY GUARDARSE EN OTRA O EN LA MISMA VARIABLE COMO CUANTO HACES UN INT I=I+1 POR EJEMPLO TAMBIBEN SE PUEDEN HACER CON +=
+		
+		archivo.open("Empleados.txt", ios::in);
+		archivoAux.open("Auxiliar.txt", ios::app);
+		if(archivo.fail() || archivoAux.fail())
+		{
+			system("cls");	Titulo();
+			gotoxy (1, 13);	cout<<"EL ARCHIVO NO ESTA O NO SE ENCUENTRA";
+			sndPlaySound("Error.wav",0);
+			getch();
+		}
+		else
+		while(getline(archivo,texto))	//LA MAYOR PARTE DE LA LECTURA DE LOS ARCHIVOS SE HACE MEDIANTE LINEAS UTILIZANDO LA FUNCION GETLINE, HAY ESCEPCIONES DODE SE UTILIZAN LOS ITERADORES >>
+		if(texto==_codigo)	//SI EN MI ARCHIVO (TEXTO) SE ENCONTRO (==) EL CODIGO DE EMPLEADO QUE YO BUSCABA (_CODIGO)
+		{
+			encontroE=true;	//ENCONTROE ES PARA SABER SI SE ENCONTRO AL EMPLEADO DENTRO DEL ARCHIVO SI SE ENCONTRO ES VERDADERO SI NO SE QUEDA COMO FALSO
+			archivoAux<<texto<<endl; //SE GUARDA EN UN ARCHIVO AUXILIAR DONDE NOS APOYAREMOS PARA DESPUES HACER LO DE LAAS COMISIONES
+			gotoxy (1, 16);	cout<<texto<<endl;	//SE IMPRIME EN PANTALLA EL CODIGO
+			getline(archivo,texto);	//SE SACA LA SIGUIENTE LINEA QUE ES LA DEL NOMBRE
+			archivoAux<<texto<<endl;	//SE GUARDA AL IGUAL QUE EL CODIGO
+			gotoxy (1, 17);	cout<<texto<<endl;	//Y TAMBIEN SE IMPRIME
+			gotoxy (1, 20);	cout<<"PRESIONE ENTER PARA CONTINUAR"<<endl;
+			getch();
+			break;	//ESTE BREAK SE UTILIZA PARA DETENER EL CICLO DEL WHILE ANTERIOR
+		}
+		archivo.close();
+		archivoAux.close();
+		
+		if(encontroE==true)	//SI SE ENCONTRO AL EMPLEADO CONTINNUAMOS, Y HACEMOS LO MISMO QUE HICIMOS ANTES PERO AHORA PARA EL CODIGO DEL CLIENTE
+		{
+			system("cls");	Titulo();
+			gotoxy (1, 13);	cout<<"INGRESE EL CODIGO DEL CLIENTE";
+			fflush(stdin);
+			gotoxy (1, 14);	getline(cin, _codigo2);
+			_codigo2="Codigo: "+_codigo2;
+			
+			archivo.open("Clientes.txt", ios::in);
+			archivoAux.open("Auxiliar.txt", ios::app);
+			if(archivo.fail())
+			{
+				system("cls");	Titulo();
+				gotoxy (1, 13);	cout<<"EL ARCHIVO NO ESTA O NO SE ENCUENTRA";
+				sndPlaySound("Error.wav",0);
+				getch();
+			}
+			else
+			while(getline(archivo,texto))
+			if(texto==_codigo2)
+			{
+				encontroC=true;
+				archivoAux<<texto<<endl;
+				gotoxy (1, 16);	cout<<texto<<endl;
+				getline(archivo,texto);
+				archivoAux<<texto<<endl;
+				gotoxy (1, 17);	cout<<texto<<endl;
+				gotoxy (1, 20);	cout<<"PRESIONE ENTER PARA CONTINUAR"<<endl;
+				getch();
+				break;
+			}
+			archivo.close();
+			archivoAux.close();
+		}
+		
+		if(encontroE==true && encontroC==true) //SI SE ENCONTRARON TANTO UN CLIENTE COMO UN EMPLEADO ENTONCES SE EJECUTA
+		{
+			for(;band==false;)	//CUANDO LA VANDERA DEJE DE SER FALSA Y SE CONVIERTA EN VERDADERA OSEA AL MOMENTO DE QUE EN EL MENU SELECCIONEMOS LA OPCION DE REGRESAR SE TERMINA EL CICLO INFINITO
+			{
+				switch (Menu_Renta_Venta()) // LOS MENUS SON IGUALES, LO UNICO QUE CAMBIAN SON ALGUNA DE LAS POSICIONES DEPENDIENDO DE LAS OPCIONES, Y POR OBIO LAS OPCIONES TAMBIEN CAMBIAN
+    			{
+	    			case 1:	
+						if(contR<2) //ESTE CONTR NOS ES PARA CUANDO HACEMOS LAS RENTAS QUE AUMENTE Y NO SEJE QUE EL CLIENTE HAGA MAS DE DOS RENTAS
+						{
+							x=Renta_Venta("Renta", renta, venta, contR, contV, _codigo);	//CUANDO SE HACE UNA RENTA O VENTA SE LLAMA A LA FUNCION, LA CUAL RETORNA UN 0 O 1, Y SE GUARDAN EN X
+							if(x==0) contR++;	//SI X EL VALOR DE RETORNO, ES IGUAL A 0 ENONCES EL CLIENTE HIZO OTRA RENTA POR LO TANTO EL CONTADOR AUMENTA
+							if(x==1) band=true;	//SI X ES IGUAL A 1 QUIEREDECIR QUE YA SE HIZO LA VENTA Y/O RENTA Y ME PONDRA MI VANDERA EN TRUE PARA REGRESAR HASTA EL MENU PRINCIPAL
+							if(x==2)
+							{
+								remove("Auxiliar.txt");
+								archivoAux.open("Auxiliar.txt", ios::out);
+								archivoAux.close();	band=true;
+								band=true;	
+							}
+						}
+						else //NO NECESITA EXPLICACION EL CODIGO MISMO LO DICE
+						{
+							system("cls");	Titulo();
+							gotoxy (1, 13);	cout<<"SOLO PUEDES HACER HASTA 2 RENTAS";
+							Sleep(2500);
+							//getch();
+						}
+						break;
+           			case 2:	x=Renta_Venta("Venta", renta, venta, contR, contV, _codigo); //AQUI ES LO MISMO QUE CON LAS RENTAS PERO, LAS VENTAS SON "INFINITAS"
+					   		if(x==0)contV++;
+							if(x==1)band=true;
+							if(x==2)
+							{
+								remove("Auxiliar.txt");
+								archivoAux.open("Auxiliar.txt", ios::out);
+								archivoAux.close();	band=true;
+								band=true;	
+							}
+						break;
+	       			case 3: //LA OPCION 3 ES CUANDO SE CANCELA, ENTONCES MI ARCHIVO AUXILIAR DONDE GUARDAMOS EL CODIGO Y NOMBRE DEL EMPLEADO Y CLIENTE SE ELIMINA Y SE VUELVE A CREAR EL ARCHIVO PERO EN BLANCO
+						system("cls");
+					   	remove("Auxiliar.txt");
+						archivoAux.open("Auxiliar.txt", ios::out);
+						archivoAux.close();	band=true;	
+						break;
+    			}
+			}
+		}
+		else //ESTE ELSE TAMBIEN HABLA POR SI MISMO (ESTA OPCION ES PARA CUANDO SE INGRESA EL EMPLEADO, Y CUANDO SE IGRESA EL DEL CLIENTE)
+		{
+			system("cls");	Titulo();
+			gotoxy (1, 13);	cout<<"NO SE PUDO REALIZAR LA RENTA O VENTA, POR QUE EL EMPLEADO INGRESADO";
+			gotoxy (1, 14);	cout<<"O EL CLIENTE INGRESADO NO ESTAN EN NUESTROS REGISTROS";
+			remove("Auxiliar.txt");
+			archivoAux.open("Auxiliar.txt", ios::out);
+			archivoAux.close();
+			getch();
+		}
+		
+	}
+	
+}
+
+int Menu_P_V(int n) //RECIBE UN ENTERO CON EL CUAL SABEMOS SI ES RENTA O VENTA Y EN ESTA FUNCION SOLO NOS SIRVE PARA SAVER CUAL SUB TITULO IMPRIMIR EN PANTALLA
+{
+	int tecla, X, Y, Cursor_Pos=15;
+	
+	system("cls");
+	Titulo();
+	//AQUI
+	if(n==1) {gotoxy (1, 13);	cout<<"RENTA";}
+	if(n==2) {gotoxy (1, 13);	cout<<"VENTA";}
+	gotoxy (2, 15);	cout<<"1.- PELICULA";
+	gotoxy (2, 17);	cout<<"2.- VIDEOJUEGO";
+		
+		gotoxy(3,23);	cout<<"UTILICE LAS TECLAS DE SELECCION Y ENTER PARA SELECCIONAR UNA OPCION, ESC PARA REGRESAR";
+		
+		gotoxy (0, Cursor_Pos);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+		cout<<(char)175;
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+		gotoxy(0,39);
+		
+		do
+		{
+			if(kbhit()) //kbhit() sirve para saber si se presiono alguna tecla
+			{
+				tecla = getch();
+				
+				switch(tecla)
+				{
+					case Tecla_Arriba:	if(Cursor_Pos >= 15) Cursor_Pos -= 2;
+										if(Cursor_Pos <15) Cursor_Pos = 17;
+										break;
+					
+					case Tecla_Abajo:	if(Cursor_Pos <= 17) Cursor_Pos += 2;
+										if(Cursor_Pos >17) Cursor_Pos = 15;
+					 					break;
+					
+					case Tecla_Enter:
+                	{
+                    	switch (Cursor_Pos)
+                    	{
+                        	case 15: return 1; break;
+                        	case 17: return 2; break;
+                        	case 19: return 3; break;
+                    	}
+                	}
+                	break;
+                	
+                	case Tecla_Esc: return 3; break;
+				}
+				
+				for (int i = 0; i<13 ; i+=2)
+            	{
+                	gotoxy (0,15+i);
+                	cout << (char) 0;
+            	}
+            	
+            	gotoxy (0, Cursor_Pos);
+		 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Verde);
+				cout<<(char)175;
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color_Def);
+				gotoxy(0,39);
+				
+			}
+			
+		}while(tecla != 27);
+	return 3;
+}
+
+int main_p_v(int n) //RECIVE UN ENTERO PARA MODER MANDARLO AL MENU DEL SWITCH
+{
+	bool band=false;
+	
+	system("cls");	Titulo();
+			
+	for(;band==false;)
+	{
+		switch (Menu_P_V(n))
+    	{
+	    	case 1:	return 0;	break; //0=Pelicula
+           	case 2:	return 1;	break; //1=Videojuego
+	       	case 3: system("cls"); return 2;	band=true;	break; //2=REGRESAR
+    	}
+	}
+}
+
+/*
+	EN EL MENU PRINCIPAL SE MANDA A LLAMAR A ESTA FUNCION DIRECTAMENTE Y ESTA FUNCION MANDA A LLAMAR A OTRA PARA SELECCIONAR PELICULA O VIDEOJUEGO
+	PARAMETROS SE MANDAN LO VALORES EN LA FUNCION MAIN_RENTA_VENTA (LINEAS 388 Y 400) AL MOMENTO DE ELEJIR LA OPCION RENTA O VENTA
+	RORV (REANTA O VENTA):	ESTE PARAMETRO RECIVE UN STRING EL CUAL NOS HACE SABER SI QUEREMOS HACER UNA RENTA O VENTA
+	SRENTA: RECIVE UNA VARIABLE TIPO ESTRUCTURA SRENTA, QUE ES LA ESTRUCTURA DONDE SE GUARDAN LOS PRECIOS DE RENTA PARA PODER HACER LAS OPERACIONES QUE OCUPEMOS CON VALORES QUE SACAMOS DE LOS STRINGS DEL ARCHIVO
+	SVENTA: ES LO MISMO QUE EL ANTERIOR PERO PARA VENTAS (SE HACEN POR SEPARADO POR QUE RENTAS TIENE UN LIMITE Y VENTAS NO)
+	_R Y_V: SON LOS VALORES ENTEROS QUE SE RECIBEN QUE HACEN REFERENCIA A LOS CONTADORES MANDADOS EN LA FUNCION MENCIONADA ANTERIORMENTE
+	_CODIGO: RECIBE UN STRIGN DONDE RECIBIMOS EL CODIGO DEL EMPLEADO PARA ASI PODER DARLE LA COMISION A ESE EMPLEADO EN ESPECIFICO
+*/
+int Renta_Venta(string RorV, sRenta r[], sVenta v[], int _R, int _V, string _codigo)
+{
+	//ARCHIVOS
+	ifstream archivo, archivoo;
+	ofstream archivo2, archivo3, archivo4, archivo5, archivoAux;
+	//DEMAS
+	int cont=0, cont2=0, lineaNombre=0, x, y, tecla, rent, vent, totalAux, comm, copias;
+	double Total=0, auxR, auxV, Pago, Cambio, Falta, com, comAux;
+	string texto, linea, palabra, _nombre1, _nombreArchivo, total, comision, T, copy;
+	bool encontroN=false, copia=true, pagado=false, para=false, b1=false, b2=false, b3=false, b4=false;
+	//PARA LOS RENOMBRES DE ARCHIVOS (CUANDO SE MODIFICA UN ARCHIVO)
+	char c1[]="Empleados.txt", c2[]="Empleados2.txt";
+	char SET[]="Peliculas.txt", SET1[]="Peliculas2.txt";
+	char SET2[]="Videojuegos.txt", SET3[]="Videojuegos2.txt";
+	//ESTA TIPO DE DATO ESTA EN LA LIBRERIA SSTREAM LA CUAL PERMITE HACER CONVERSIONES TIPO DOBLE A STRINGS
+	stringstream ss;
+	
+	//RECORDEMOS RORV ES PARA SABER SI ES RENTA O VENTA
+	if(RorV=="Renta") y=1;
+	if(RorV=="Venta") y=2;
+	
+	//CUANDO MANDEMOS Y=1 O Y=2, ENTONCES EN EL MAIN VA A RECIBIR UN UNO EL CUAL VA A MANDAR AL MENU, Y ASI IMPRIMIR EL SUBTITULO ANTES MENCIONADO
+	x=main_p_v(y);
+	
+	/*
+		CUANDO MANDAMOS LLAMAR A LA FUNCION ANTERIOR COMO NOS RETORNA UN ENTERO PARA SABER SI ESCOJIMOS PELICULA O VIDEOJUEGO
+		ENTONCES SE GUARDA ESE VALO R EN X Y ASI SABER CUAL ES EL ARCHIVO QUE VAMOS A HABRIR PARA LEER LA INFORMACION Y/O MODIFICARLA
+		CUANDO SE RETORNA UN CERO ES EL DE PELICULA Y 1 VIDEOJUEGO, Y SE GUARDA EL NOMBRE DEL ARCHIVO EN LA VARIABLE ESTRING MOSTRADA
+		A CONTINUACION
+	*/
+	if(x==0) _nombreArchivo="Peliculas.txt";
+	if(x==1) _nombreArchivo="Videojuegos.txt";
+	
+	if(x!=2) //SI SE RETORNA UN 2 ENTONCES NO SE HACE NINGUN PROCESO DE RENTA O VENTA
+	{
+		do	//ESTE DO-WHILE NOS SIRVE PARA QUE ENCASO DE QUE EL USUARIO SE EQUIVOQUE AL PONER EL NOMBRE DE LO QUE BUSCA LO REGRESE PARA QUE LO PUEDA INGRESAR DE FORMA CORRECTA
+		{
+			system("cls");	Titulo();
+			//ESTAS COMPARACIONES SOLO ES PARA SABER QUE "SUBTITULO" IMPRIMIR, ROCORDEMOS QUE Y ES PARA SABER SI ES RENTA O VENTA, Y EL OTRO PUES ES VISUAL
+			gotoxy (1, 13);	cout<<"INGRESE EL NOMBRE DE";
+			if(_nombreArchivo=="Peliculas.txt" && y==1)		cout<<" LA PELICULA A RENTAR";
+			if(_nombreArchivo=="Videojuegos.txt" && y==1)	cout<<"L VIDEOJUEGO A RENTAR";
+			if(_nombreArchivo=="Peliculas.txt" && y==2)		cout<<" LA PELICULA A VENDER";
+			if(_nombreArchivo=="Videojuegos.txt" && y==2)	cout<<"L VIDEOJUEGO A VENDER";
+			gotoxy (1, 14);	fflush(stdin); getline(cin, _nombre1);
+			_nombre1="Nombre: "+_nombre1; //AQUI SE GUNTAN DOS CADENAS LA DEL NOMBRE QUE INGRESA EL USUAIRO, Y LA PALABRA QUE ESTA ANTES DEL NOMBRE EN EL ARCHIVO, Y SE GUARDA EN LA MISMA VARIABLE (SE SOBREESCBRIBE LA VARIABLE)
+			
+			//YA QUE POR LO GENERAL SE LLEGAN A OCUPAR LOS CONTADORES VARIAS VECES EN EL PROCESO DE LA COMPRA Y VENTA SIEMPRE ANTES
+			//DE UTILIZARLAS HAY QUE IGUALARLAS A 0, PARA QUE NO TENGAN ALGUN VALOR QUE NOS PUEDA MOFICAR ALGO QUE NO QUEREMOS
+			cont=0;
+			cont2=0;
+			archivo.open(_nombreArchivo.c_str(), ios::in);
+			/*
+				CON ESTE WHILE LO QUE HACEMOS ES SACAR UNA LINEA DEL ARCHIVO QUE SE ABRIO Y HACER UN RECORRIDO POR LINEAS
+				HASTA ENCONTRAR EL NOMBRE QUE BUSCAMOS AUMENTAMOS UN CONTADOR QUE ME GUARDE EN QUE NUMERO DE LINEA ESTA 
+				EL NOMBRE QUE BUSCAMOS, ENCASO DE ECONTRARLO NUESTRA VARIABLE BOOL ENCONTRON SE VOLVERA VERDADERA Y DESPUES
+				SE UTILIZARA OTRO WHILE PARA QUE ME SIGA LEYENDO LINEAS Y SI ENCUENTRA EL NOMBRE QUE ME BUSQUE 
+			*/
+			while(getline(archivo,texto))
+			{
+				if(texto==_nombre1)
+				{
+					lineaNombre=cont;
+					encontroN=true;
+					
+					while(getline(archivo,texto) && cont2<=3)
+					{
+						if(texto=="Numero Copia: 0")
+						{
+							copia=false;
+							cont2++;
+						}
+					}
+				}
+				cont++;
+			}
+			archivo.close();
+			//CERAMOS EL ARCHIVO, Y NUESTROS CONTADORES A UTILIZAR O REUTILIZAR LOS IGUALAMOS DE NUEVO A 0
+			cont=0;
+			cont2=0;
+			if(encontroN==false)	//SI EN MI ARCHIVO NO SE ENCONTRO EL NOMBRE DE LO QUE SE BUSCABA ENTONCES SE HACE LO SIGUIENTE
+			{
+				system("cls");	Titulo();
+				gotoxy (1, 13);	cout<<"NO SE ENCONTRO LO QUE BUSCABA";
+				Sleep(3500);
+				system("cls");	Titulo();
+				gotoxy (1, 13);	cout<<"DESEA INGRESAR DE NUEVO EL NOMBRE O INGRESAR OTRO NOMBRE? ENTER SI/ ESC REGRESAR AL MENU PRINCIPAL";
+				tecla=getch();
+				if(tecla==27)	return 2;
+				Sleep(1000);
+			}
+			if(encontroN==true && copia==false)	//SI EN MI ARCHIVO SE ENCONTRO EL NOMBRE DE LO QUE SE BUSCABA PERO NO HAY COPIAS ENTONCES SE HACE LO SIGUIENTE
+			{
+				system("cls");	Titulo();
+				gotoxy (1, 13);	cout<<"SE ENCONTRO LO QUE BUSCABA, PERO NO HAY COPIAS EN EXISTENCIA";
+				Sleep(3500);
+				system("cls");	Titulo();
+				gotoxy (1, 13);	cout<<"DESEA INGRESAR DE NUEVO EL NOMBRE O INGRESAR OTRO NOMBRE? ENTER SI/ ESC REGRESAR AL MENU PRINCIPAL";
+				tecla=getch();
+				if(tecla==27)	return 2;
+				Sleep(1000);
+			}
+		}while(encontroN==false && copia==false); //CUANDO SE ENCUENTRE EL NOMBRE Y TENGA COPIAS DISPONIBLES, SE SALE DEL WHILE Y CONTINUA EL PROCESO
+		
+		if(_nombreArchivo=="Peliculas.txt") //AQUI SE REVISA CUAL ARCHIVO SE VA A ABRIR PARA SABER CUAL ES EL QUE SE VA MODIFICAR AL MOMENTO DE HACER LA RENTA Y/0 VENTA
+		{
+			cont=0;
+			archivo.open("Peliculas.txt", ios::in);		//ABRIMOS NUESTRO ARCHIVO DE LECTURA
+			archivo2.open("Peliculas2.txt",ios::out);	//ABRIMOS EL ARCHIVO DONDE SE GUARDARA LA INFORMACION MODIFICADA
+			while(getline(archivo,linea))	//CON EL WHILE SACAMOS LINEA POR LINEA DEL ARCHIVO, Y ESO ES PARA MODIFICAR LA CANTIDAD DE COPIAS EN EL ARCHIVO
+			{
+				if(linea==_nombre1)		//CUANDO LA LINEA QUE SE SACO DEL ARCHIVO SEA IGUAL A LA DEL NOMBRE QUE BUSCO
+				{
+					archivo2<<linea<<endl;	//METO A MI ARCHIVO NUEVO ESA LINEA QUE SACO
+					while(getline(archivo,linea) && cont<=2)	//VUEVO A SACAR LINEAS PERO EN ESTE CASO HASTA UNA CIERTA CANTIDAD DE LINEAS QUE SON DE 0 A 2 ESTO PARA LLEGAR A LA LINEA ANTERIOR A LA DE NUMERO DE COPIAS
+					{
+						if(cont==2) //AQUI YA SE LLEGO A ESA LINEA
+						{
+							archivo2<<linea<<endl; //INGRESO LA LINEA AL ARCHIVO
+							archivo>>palabra;	archivo2<<palabra+" ";	//SACO AHORA POR PALABRAS, SACO DOS PALABRAS (NUMERO Y COPIAS:)
+							archivo>>palabra;	archivo2<<palabra+" ";	//LAS METO AL ARCHIVO SIN DAS SALTOS DE LINEA, SINO ESPACIOS POR QUE  VAN JUNTAS
+							archivo>>copias;	//SACO EL NUMERO DE LAS COPIAS QUE HAY Y LO GUARDO EN UNA VARIABLE ENTERA
+							if(copias>0) copias-=1;		//SI ESE NUMERO ES MAYOR A 0 SE DESCUENTA UNO (SI EL NUMERO DE COPIA ES 5 SE REDUCE A 4, Y ASI SUCESIVAMENTE)
+							ss<<copias;		//GUARDO MI NUEVA VARIABLE ENTERA EN UNA VARIABLE TIPO STRINGSTREAM, PARA PODER HACER UNA CONVERSION DE ENTERO A STRING
+							copy=ss.str();		//AGO LA CONVERSION CON EL .STR() QUE ME RETORNA UN ASTRING DE LA VARIABLE SS, Y ME LA ALMACENA EN STRING (COPY)
+							archivo2<<copy<<endl;  //AHORIA METO MI CANTIDAD DE COPIAS NUEVA AL ARCHIVO Y QUEDA EN LA MISMA LINEA, AHORA SI DAMOS UN SALTO DE LINEA, PARA QUE ME GURDE LAS DEMAS LINEAS POR DEBAJO
+							ss.str(""); //DE ESTA FORMA SE LIMPIA EL BUFFER DE LA VARIABLE STRINGSTREAM, MANDANDODE UN VALOR NULO COMO "CARACTER"
+						}
+						else archivo2<<linea<<endl;	//ESTE ELSE LO QUE HACE ES QUE MIENTRAS LAS LINEAS QUE SAQUE NO SEAN LAS QUE SE VAN A MODIFICAR ME LAS META AL ARCHIVO TAL CUAL
+						cont++;
+					}
+				}
+				else archivo2<<linea<<endl; //ESTA TAMBIEN MIENTRAS LA LINEA QUE SAQUE NO SEA LA QUE BUSCO ME METE AL OTRO ARCHIVO LA LINEA TAL CUAL
+			}
+			archivo.close();
+			archivo2.close(); //CERRAMOS ARCHIVOS
+			remove(SET);	//ELIMINAMOS EL ARCHIVO ORIGINAL
+			rename(SET1,SET);	//Y RENOMBRAMOS EL ARCHIVO MODIFICADO, POR EL NOMBRE DEL ARCHIVO ORIGINAL, PARA QUE SEA NUESTRO NUEVO ORIGINAL
+			
+			Mod_Rep_Disp("Peliculas.txt", RorV, _nombre1); //SE LLAMA A LA FUNCION QUE MODIFICA A LOS ARCHIVOS DE REPORTES DE DISPONIBLES, MAS ADELANTE SE EXPLICA
+		}
+		
+		if(encontroN==true && _nombreArchivo=="Videojuegos.txt") // EN ESTE IF SE HACE LO MISMO QUE EN EL ANTERIOR PERO PARA VIDEOJUEGOS
+		{
+			cont=0;
+			archivo.open("Videojuegos.txt", ios::in);
+			archivo2.open("Videojuegos2.txt",ios::out);
+			while(getline(archivo,linea))
+			{
+				if(linea==_nombre1)
+				{
+					archivo2<<linea<<endl;
+					while(getline(archivo,linea) && cont<=1)
+					{
+						if(cont==1)
+						{
+							archivo2<<linea<<endl;
+							archivo>>palabra;	archivo2<<palabra+" ";
+							archivo>>palabra;	archivo2<<palabra+" ";
+							archivo>>copias;
+							if(copias>0) copias-=1;
+							ss<<copias;
+							copy=ss.str();
+							archivo2<<copy<<endl;
+							ss.str("");
+						}
+						else archivo2<<linea<<endl;
+						cont++;
+					}
+				}
+				else archivo2<<linea<<endl;
+			}
+			archivo.close();
+			archivo2.close();
+			remove(SET2);
+			rename(SET3,SET2);
+			
+			Mod_Rep_Disp("Videojuegos.txt", RorV, _nombre1);
+		}
+		
+		cont=0;
+		cont2=0;
+		archivo.open(_nombreArchivo.c_str(), ios::in); //SE ABRA EL ARCHIVO DE PELICULAS O VIDEOJUEGOS DEPENDIENDO DE LA OPCION MANDADA
+		archivoAux.open("Auxiliar.txt", ios::app);
+		/*
+			EN ESTE ARCHIVO AUXILIAR YA SE TIENE GUARDADO EL NOMBRE DEL CLIENTE Y EMPLEADO QUE SE INGRESO CON ANTERIORIDAD
+			Y LA UTILIZAREMOS DE NUEVO PARA INGRESAR EL CODIGO Y NOMBRE DE LA PELICULA O VIDEOJUEGO INGRESADO CON SU RESPECTIVO PRECIO
+			DEPENDIENDO SI ES RENTA O VENTA
+		*/
+		if(archivo.fail() || archivoAux.fail())
+		{
+			system("cls");	Titulo();
+			gotoxy (1, 13);	cout<<"EL ARCHIVO NO ESTA O NO SE ENCUENTRA";
+			sndPlaySound("Error.wav",0);
+		}
+		else
+		while(getline(archivo,linea)) //SE VA SACANDO LINEA POR LINEA DEL ARCHIVO QUE SE ABRIO (EL DE LECTURA)
+		{
+			if(cont==lineaNombre-1) //CON EL CONTADOR REVISAMOS SI SE LLEGO A LA LINEA ANTERIOR DEL NOMBRE (LINEA DEL CODIGO) DE LA PELICULA O VIDEOJUEGO QUE BUSCAMOS
+			{
+				if(cont==lineaNombre-1) //CUANDO SE ENCUENTRA ESA LINEA SE VA A AGREGAR UNAS PALABRAS DESPUES DE LOS NOMBRES Y CODIGOS DEL CLIENTE Y EMPLEADO
+				{
+					if(RorV=="Venta") archivoAux<<endl<<"VentaP"<<endl; //SI ES UNA VENTA DE PELICULA METERA AL ARCHIVO LA PALABRA MOSTRADA
+					if(RorV=="Renta") archivoAux<<endl<<"RentaP"<<endl;	//SI ES UNA RENTA DE PELICULA METERA AL ARCHIVO LA PALABRA MOSTRADA
+					archivoAux<<linea<<endl;	//AQUI ME GUARDA EN EL ARCHIVO NUEVO LALINEA DE LA LINEANOMBRE-1, QUE SERIA LA DEL CODIGO DE LA PELICULA O VIDEOJUEGO
+					gotoxy (1, 16);	cout<<linea<<endl; //ME LA IMPRIME EN PANTALLA
+				}
+				
+				if(_nombreArchivo=="Peliculas.txt")
+				while(cont2<=7)						//AHORIA SI EL ARCHIVO QUE SE HABRIO FUE EL DEPELICULA ME VA A LEER DESDE EL NOMBRE Y ME VA A GUARDAR EN EL ARCHIVO NUEVO SOLO UNAS CUANTAS
+				{
+					if(cont2==1) //CON ESTE IF ME GUARDA EN EL ARCHIVO NUEVO LA LINEA DEL NOMBRE, Y ME LA MUESTRA EN PANTALLA
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 17);	cout<<linea<<endl;
+					}
+					if(cont2==6 && RorV=="Venta")	//CON ESTE IF ME GUARDA EN EL ARCHIVO NUEVO LA LINEA DEL PRECIO DE VENTA, Y ME LA IMPRIME EN PANTALLA
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 18);	if(RorV=="Venta") cout<<linea<<endl;
+					}
+					if(cont2==7 && RorV=="Renta")	//CON ESTE IF ME GUARDA EN EL ARCHIVO NUEVO LA LINEA DEL PRECIO DE RENTA, Y ME LA IMPRIME EN PANTALLA
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 18);	if(RorV=="Renta") cout<<linea<<endl;
+					}
+					
+					else getline(archivo, linea); //CON ESTE ELSE SACO LAS LINEAS () TODAS, PERO CON LOS IF SOLO SE GUARDA EN EL ARCHIVO NUEVO LAS QUE REQUIERO
+					cont2++;
+				}
+				
+				if(_nombreArchivo=="Videojuegos.txt") //ESTE IF HACE LO MISMO QUE EL ANTERIOR PERO LEE EL DE VIDEOJUEGOS, Y METE AL ARCHIVO AUXILIAR LOS DATOS DEL VIDEOJUEGO
+				while(cont2<=6)
+				{
+					if(cont2==1)
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 17);	cout<<linea<<endl;
+					}
+					if(cont2==5 && RorV=="Venta")
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 18);	if(RorV=="Venta") cout<<linea<<endl;
+					}
+					if(cont2==6 && RorV=="Renta")
+					{
+						archivoAux<<linea<<endl;
+						gotoxy (1, 18);	if(RorV=="Renta") cout<<linea<<endl;
+					}
+					
+					else getline(archivo, linea);
+					cont2++;
+				}
+				gotoxy (1, 21);	cout<<"PARA CONTINUAR CON LA VENTA O RENTA PRESIONE ENTER"<<endl;
+				getch();
+				break;
+			}
+			cont++;
+		}
+		archivo.close();
+		archivoAux.close();
+		cont=0;
+		
+		archivo.open(_nombreArchivo.c_str(), ios::in);	//AQUI SE VULVE A ABRIR EL ARCHIVO SELECIIONADO, PELICULAS O VIDEOJUEGOS
+		while(getline(archivo,linea)) //CON ESTAS INSTRUCCIONES SACO EL PRECIO DE LA PELICULA Y O VIDEOJUEGO RENTADO O VENDIDO Y LA GUARDO ES SU ESTRUCTURA CORREPONDIENTE, PARA PODER HACER LAS OPERACIONES
+		{
+			if(cont==lineaNombre) //CUANTO MI CONTADOR SEA IGUAL AL NOMBE DE MI LINEA
+			{
+				while(archivo>>palabra) //EMPIEZO A SACAR POR PALABRAS
+				{
+					if(palabra=="Venta:") //HASTA QUE LLEGE A LA PALABRA VENTA
+					{
+						archivo>>auxV;	//Y ME SACA EL PRECIO DE VENTA, SE GUARDA EN UNA VARIABLE
+						v[_V].Precio_Venta=auxV;	// Y ESA VARIABLE ME LA GUARDA EN LA ESTRUCTURA CORRESPONDIENTE A LA VENTA
+					}
+					if(palabra=="Renta:") //ESTE IGUAL PERO PARA LAS RENTAS
+					{
+						archivo>>auxR;
+						r[_R].Precio_Renta=auxR;
+						break;
+					}
+				}
+				break;
+			}
+			cont++;
+		}
+		
+		/*
+			AQUI LO QUE SE HACE ES, SI ES UNA RENTA QUE ME SAQUE LOS PRECIOS DE RENTA QUE LLEVO EN MI VARIABLE PRECIO DE LA ESTRUCTURA
+			Y ME LA VALLA SUMANDO A LA VARIABLE DEL TOTAL CORRESPONDIENTE QUE TAMBIEN ESTA EN CADA ESTRUCTURA, SE GUARDA EN UNA VARIABLE
+			TOTAL DENTRO DE LA ESTRUCTURA, POR QUE SI LA HACEMOS DENTRO DE UNA VARIABLE DENTRO DE ESTA FUNCION SE SOBREESCRIBE Y NO SE SUMAN
+			LOS PRECIOS
+		*/
+		if(RorV=="Renta")	r[_R].TotalR+=r[_R].Precio_Renta;
+		if(RorV=="Venta")	v[_V].TotalV+=v[_V].Precio_Venta;
+		
+		//AQUI AHORA SI SE SACAN LOS VALORES DE LOS TOTALES Y SE VAN AGREGANDO AL TOTAL, ESTA VARIABLE TOTAL, SE VA A ESTAR MODIFICANDO MIENTRAS NO TERMINEMOS LA RENTA O VENTA
+		for(rent=0;rent<=_R; rent++)	Total+=r[rent].TotalR;
+		for(vent=0;vent<=_V; vent++)	Total+=v[vent].TotalV;
+		
+		archivo.close();
+	}
+	
+		system("cls");	Titulo();
+		
+		//AQUI LO QUE SE HACE ES QUE SOLO ME AGARRE 2 VALORES DESPUES DEL PUNTO DECIMAL EN CASO DE QUE TENGA
+		totalAux=Total*100;
+		Total=(double)totalAux/100;
+		
+		if(x==0 || x==1)	//AQUI SE MANDA UN MENSAGE CON EL TOTAL HASTA EL MOMENTO, Y SI QUIERE HACER ALGO MAS, LA X ES DE LAS OPCIONES DEL INICIO
+		{
+			gotoxy (1, 13);	cout<<"LA CANIDAD A PAGAR HASTA EL MOMENTO ES DE: "<<char(36)<<Total;
+			gotoxy (1, 15);	cout<<"QUIERES HACER OTRA VENTA O RENTA, ENTER SI / ESC NO";
+			gotoxy (1, 16);	cout<<"RECUERDA QUE SOLO PUEDES HACER DOS RENTAS";
+			tecla=getch();
+		}
+		
+		if(tecla==13) return 0; //SI SE PRECIONO ENTER PARA HACER UNA COMPRA RETORNA UN CERO PARA PODER HACER OTRA VENTA O RENTA
+		if(tecla==27) //SI SE PRECIONA ESC ENTONCES YA TERMINO Y SE VA A HACER EL PAGO
+		{
+			cont=0;
+			cont2=0;
+			archivo.open("Empleados.txt", ios::in);
+			archivo2.open("Empleados2.txt", ios::out);
+			while(getline(archivo,linea)) //ESTE WHILE ES PARA BUSCAR LA LINEA DE LAS COMISIONESY MODIFICARLA CON LAS COMISIONES
+			{
+				if(linea==_codigo)	//SI MI LINEA DEL ARCHIVO ES IGUAL A LA LINEA DEL CODIGO QUE ESTOY BUGANDO
+				{
+					archivo2<<linea<<endl;	//METO ESA LINEA AL ARCHVO AUXILIAR DE EMPLEADOS QUE ES EMPLEADOS2.TXT
+					while(getline(archivo,linea) && cont<=4)	//AHORA BUSCO LA LINEA QUE ESTA ANTES DE LA LINEA DE COMISION QUE ES LA LINEA 4 DESPUES DE LA LINEA DEL CODIGO (EMPEZANDO A CONTAR DE 0-4)
+					{
+						if(cont==4) //SI MI CONTADOR ES IGUAL A 4 (LA LINEA ANTES DE LA COMISION)
+						{
+							archivo2<<linea<<endl; //METE ESA LINEA
+							
+							archivo>>palabra;	//Y AHORA SACO POR PALABRAS, ESTA ES LA PALABRA COMISION:
+							archivo>>com;	//Y ESTA EL LA DEL NUMERO DE COMISIONES, QUE SE GUARDA EN UNA VARIABLE DOUBLE POR SI TIENE PUNTOS DECIMALES
+							if(com==0)	//SI MI COMISION ES IGUAL A 0
+							{
+								com=(Total*5)/100;	//MODIFICO EL VALOR DE COM POR MI COMISON HACIENDO LA CONVERSION COMO SE LES DA 5% DEL TOTAL SE HACE LA OPERACION
+								comm=com*100;	//ESTA PARTE ES PARA QUE SOLO AGARRE DOS DECIMALES COMM ES UN ENTERO
+								com=(double)comm/100;	//DESPUES SE VUELVE A PASAR A LA VARIABLE DOUBLE PERO CON SOLO DOS DECIMALES
+								ss<<com;	//SE METE ESE VALOR A UN STRIGNSTREAM
+								comision=ss.str();	//Y SE HACE LA CONVERSION A STRING
+								archivo2<<"Comisiones: "+comision;	//Y SE AGREGA LA LINEA DE COMISIONES CON LA NUEVA COMISION
+								ss.str("");	//SE LIMPIA EL BUFFER
+							}
+							else if(com>0)	//ESTE ELSE HACE LO MISMO PERO SI YA HAY UNA COMISION ENTONCECS HACE LA SUMA DE LA COMISION QUE YA ESTABA GUARDADA EN COMAUX Y SE HACE LO DE LA COMISION NUEVA Y SE SUMAN Y SE GREGA COMO STRIGN DE LA MISMA MANERA
+							{
+								comAux=com;
+								com=(Total*5)/100;
+								comm=com*100;
+								com=(double)comm/100;
+								com+=comAux;
+								ss<<com;
+								comision=ss.str();
+								archivo2<<"Comisiones: "+comision;
+								ss.str("");
+							}
+							archivo2<<endl; //AL FINAL SE DA UN SALTO DE LINEA PARA QUE NO SE SE PEGUEN LOS DATOS Y TENGA UN ORDEN
+						}
+						else archivo2<<linea<<endl;	//ESTE ELSE LAS LINEAS QUE NO SE MODIFICAN LAS METE TAL CUAL AL ARCHIVO AUXILIAR
+						cont++;
+					}
+				}
+				else archivo2<<linea<<endl; //ESTE ELSE LAS LINEAS QUE NO SE MODIFICAN LAS METE TAL CUAL AL ARCHIVO AUXILIAR
+			}
+			archivo.close();
+			archivo2.close();
+			
+			remove("Empleados.txt"); //SE ELIMINA EL ARCHIVO ORIGINAL
+			rename(c2,c1);	//Y SE RENOMBRA EL ARCHIVO AUXILIAR POR EL NOMBRE DEL ORIGIANL
+			
+			do //EN ESTE DO-WHILE SE HACE EL PAGO SE PONE UN DO-WHILE POR SI EL CLIENTE PAGA MENOS DE LA CANTIDAD
+			{
+				system("cls");	Titulo();
+				gotoxy (1, 14);	cout<<"LA CANIDAD A PAGAR ES DE: "<<char(36)<<Total;
+				
+				gotoxy (1, 16);	cout<<"INGRESE LA CANTIDAD CON LA QUE PAGARA ";
+				gotoxy (1, 17);	cout<<char(36);	gotoxy (2, 17);	cin>>Pago;
+				
+				if(Pago==Total) //SI LA CANTIDAD QUE DIO EL CLIENTE ES IGUAL AL TOTAL ENVIA EL MENSAJE DE ACONTINUACION
+				{
+					sndPlaySound("CajaRegistradora.wav",0);
+					gotoxy (1, 20);	cout<<"GRACIAS POR SU COMPRA VUELVA PRONTO";
+					Sleep(2000);
+					pagado=true;
+				}
+				if(Pago>Total) //SI LA CANTIDAD QUE DIO EL CLIENTE ES MAYOR, LE REGRESA EL CAMBIO
+				{
+					Cambio=Pago-Total;
+					sndPlaySound("CajaRegistradora.wav",0);
+					gotoxy (1, 20);	cout<<"SU CAMBIO ES DE: "<<char(36)<<Cambio;
+					gotoxy (1, 22);	cout<<"GRACIAS POR SU COMPRA VUELVA PRONTO";
+					Sleep(2000);
+					pagado=true;
+				}
+				if(Pago<Total)	//SI LA CANTIDAD ES MENOR, LE PIDE QUE INGRESE EL "NUEVO" PRECIO A PAGAR
+				{
+					Falta=Total-Pago;
+					Total=Falta;
+					gotoxy (1, 20);	cout<<"LE HACEN FALTA: "<<char(36)<<Falta;
+					Sleep(2200);
+				}
+				
+			}while(pagado!=true);
+			
+			cont=0;
+			archivo.open("Auxiliar.txt", ios::in);
+			while(getline(archivo, linea)) //EN ESTE WHILE SE VERIFICA SI HAY UNAS PALABRAS CLAVE DENTRO DEL ARCHIVO QUE ES RENTAP, VENTAP, RENTAV, Y VENTAV
+			{
+				if(linea=="RentaP") b1=true;	//SI HUBO UNA RENTA/VENTA NUESTRA "BANDERA" SE VUELVE VERDADERA
+				if(linea=="VentaP") b2=true;
+				if(linea=="RentaV") b3=true;
+				if(linea=="VentaV") b4=true;
+			}
+			archivo.close();
+			
+			if(b1==true) //SI HUBO UNA RENTA, ENTONCES
+			{
+				cont=0;
+				cont2=0;
+				archivo.open("Auxiliar.txt", ios::in); //ABRO MI ARCHIVO AUXILIAR PARA SACAR LA INFO DE ESA 
+				archivo2.open("Reporte_P_Rent.txt", ios::app);	//ABRO MI ARCHIVO DE REPORTES DE RENTAS DE PELICULAS
+				while(cont<4)	//SACA DE MI ARCHIVO AUXILIAR LAS 4 PRIMERAS LINEAS QUE SON LOS NOMBRES Y CODIGOS DEL EMPLEADO Y CLIENTE Y ME LO GUARDA EN MI ARCHIVO DE REPORTE
+				{
+					getline(archivo, linea);
+					archivo2<<linea<<endl;
+					cont++;
+				}
+				while(getline(archivo, linea)) //SIGUE SACANDO LINEAS HASTA QUE  ENCUENTRE LA PALABRA CLAVE RENTAP 
+				{
+					if(linea=="RentaP") //CUANTO LA ENCUENTRA
+					{
+						while(getline(archivo, linea) && cont2<3)	//ME SACA 3 LINEAS QUE SON LA DEL CODIGO, NOMBRE, Y PRECIO DEL ARTICULO RENTADO
+						{
+							archivo2<<linea<<endl;
+							cont2++;
+						}
+					}
+				}
+				archivo2<<endl;
+				archivo.close();
+				archivo2.close();
+			}
+			if(b2==true) //AQUI SE HACE LO MISMO PERO CON LOS REPORTES DE VENTAS DE PELICULAS
+			{
+				cont=0;
+				cont2=0;
+				archivo.open("Auxiliar.txt", ios::in);
+				archivo3.open("Reporte_P_Vend.txt", ios::app);
+				while(cont<4)
+				{
+					getline(archivo, linea);
+					archivo3<<linea<<endl;
+					cont++;
+				}
+				while(getline(archivo, linea))
+				{
+					if(linea=="VentaP")
+					{
+						while(getline(archivo, linea) && cont2<3)
+						{
+							archivo3<<linea<<endl;
+							cont2++;
+						}
+					}
+				}
+				archivo3<<endl;
+				archivo.close();
+				archivo3.close();
+			}
+			if(b3==true)	//AQUI SE HACE LO MISMO PERO CON LOS REPORTES DE RENTA DE VIDEOJUEGOS
+			{
+				cont=0;
+				cont2=0;
+				archivo.open("Auxiliar.txt", ios::in);
+				archivo4.open("Reporte_V_Rent.txt", ios::app);
+				while(cont<4)
+				{
+					getline(archivo, linea);
+					archivo4<<linea<<endl;
+					cont++;
+				}
+				while(getline(archivo, linea))
+				{
+					if(linea=="RentaV")
+					{
+						while(getline(archivo, linea) && cont2<3)
+						{
+							archivo4<<linea<<endl;
+							cont2++;
+						}
+					}
+				}
+				archivo4<<endl;
+				archivo.close();
+				archivo4.close();
+			}
+			if(b4==true)	//AQUI SE HACE LO MISMO PERO CON LOS REPORTES DE VENTA DE VIDEOJUEGOS
+			{
+				cont=0;
+				cont2=0;
+				archivo.open("Auxiliar.txt", ios::in);
+				archivo5.open("Reporte_V_Vend.txt", ios::app);
+				while(cont<4)
+				{
+					getline(archivo, linea);
+					archivo5<<linea<<endl;
+					cont++;
+				}
+				while(getline(archivo, linea))
+				{
+					if(linea=="VentaV")
+					{
+						while(getline(archivo, linea) && cont2<3)
+						{
+							archivo5<<linea<<endl;
+							cont2++;
+						}
+					}
+				}
+				archivo5<<endl;
+				archivo.close();
+				archivo5.close();
+			}
+
+			remove("Auxiliar.txt"); //SE ELIMINA EL ARCHIVO AUXILIAR PARA QUITARLE EL CONTENIDO
+			archivo2.open("Auxiliar.txt", ios::out);	//Y SE VUELVE A CREAR
+			archivo2.close();
+			
+			Estatus(); //SE LLAMA A LA FUNCION DE ESTATUS
+			
+			return 1;
+		}
+}
+
+void Estatus()	// ESTA FUNCION LO QUE HACE ES ABRIR CADA ARCHIVO PARA VERIFICAR SI LOS NUMEROS DE COPIAS SON 0 Y CAMBIE EL ESTATUS DE DISPONIBLE A NO DISPONIBLE
+{
+	ifstream archivo;
+	ofstream archivo2;
+	int cont=0, cont2=0, cont3[20], cont4[20];
+	string linea, lineaAux;
+	stringstream ss;
+	char SET[]="Peliculas.txt", SET1[]="Peliculas2.txt";
+	char SET2[]="Videojuegos.txt", SET3[]="Videojuegos2.txt";
+	
+	//SE ABRE EL ARCHIVO DE PELICULAS
+	archivo.open("Peliculas.txt", ios::in);
+	while(getline(archivo,linea))
+	{
+		if(linea=="Numero Copia: 0") //CUANDO SE LLEGA A LA LINEA DEL NUMERO DE COPIAS Y ESTA ES IGUAL A CERO ME GUARDA EN UN ARREGLO LAS POSICIONES EN DONDE ENCONTRO ESTA FRASE
+		{
+			cont3[cont2]=cont;
+			cont2++;
+		}
+		cont++;
+	}
+	archivo.close();
+	
+	cont=0;
+	cont2=0;
+	
+	//VUELVO A ABRIR MI ARCHIVO Y UN ARCHVO AUXXILIAR PARA PASAR LO MODIFICADO
+	archivo.open("Peliculas.txt", ios::in);
+	archivo2.open("Peliculas2.txt", ios::out);
+	while(getline(archivo,linea))
+	{
+		if(cont==cont3[cont2]-1) //SI MI CONTADOR ES IAGUAL A LA LINEA ANTERIOR QUE ES LA DEL ESTATUS ME CAMBIE EL ESTATUS A NO DISPONIBLE
+		{
+			archivo2<<"Estatus: NO DISPONIBLE"<<endl;
+			cont2++;
+		}
+		else	archivo2<<linea<<endl; //LAS LINEAS QUE NO SE MODIFICAN SE PASAN TAL CUAL AL OTRO ARCHIVO
+		cont++;
+	}
+	archivo.close();
+	archivo2.close();
+	remove(SET); //SE ELIMINA EL ARCHIVO ORIGINAL
+	rename(SET1,SET);	//SE RENOBRA MI ARCHIVO AUXILIAR POR EL DEL ORIGINAL
+	
+	cont=0;
+	cont2=0;
+	
+	//AQUI SE HACE LO MISMO QUE EL ANTERIOR PERO PARA VIDEOJUEGOS
+	archivo.open("Videojuegos.txt", ios::in);
+	while(getline(archivo,linea))
+	{
+		if(linea=="Numero Copia: 0")
+		{
+			cont4[cont2]=cont;
+			cont2++;
+		}
+		cont++;
+	}
+	archivo.close();
+	
+	cont=0;
+	cont2=0;
+	
+	archivo.open("Videojuegos.txt", ios::in);
+	archivo2.open("Videojuegos2.txt", ios::out);
+	while(getline(archivo,linea))
+	{
+		if(cont==cont4[cont2]-1)
+		{
+			archivo2<<"Estatus: NO DISPONIBLE"<<endl;
+			cont2++;
+		}
+		else
+		{
+			archivo2<<linea<<endl;
+		}
+		cont++;
+	}
+	archivo.close();
+	archivo2.close();
+	remove(SET2);
+	rename(SET3,SET2);
+}
+
+//ESTA FUNCION ES PARA CAMBIAR LAS CANTIDADES DE LOS ESTATUS DE LOS REPORTES DE DISPONIBLES
+void Mod_Rep_Disp(string _nombreArchivo, string _RorV, string _nombre1)
+{
+	int cont=0,copias;
+	string linea, palabra, nomArchRep, nomArchRep2, copy;
+	char SET4[]="Reporte_P_Disp.txt", SET5[]="Reporte_P_Disp2.txt";
+	char SET6[]="Reporte_V_Disp.txt", SET7[]="Reporte_V_Disp2.txt";
+	ifstream archivo;
+	ofstream archivo2;
+	stringstream ss;
+	
+	//SI EL NOMBRE QUE RECIBO CONO REFERENCIA ES IGUAL A LA DE PELICULAS, ENTONCES SE TOMAN LOS NOMBRES DE LOS REPORTES DE PELICULAS
+	if(_nombreArchivo=="Peliculas.txt")
+	{
+		nomArchRep=SET4;
+		nomArchRep2=SET5;
+	}
+	//SI EL NOMBRE QUE RECIBO CONO REFERENCIA ES IGUAL A LA DE PELICULAS, ENTONCES SE TOMAN LOS NOMBRES DE LOS REPORTES DE VIDEOJUEGOS
+	if(_nombreArchivo=="Videojuegos.txt")
+	{
+		nomArchRep=SET6;
+		nomArchRep2=SET7;
+	}
+	
+	//ABRO EL ARCHIVO DE REPORTES Y LE CAMBIO LA CANTIDAD EN LOS DISPONIBLES A MENOS UNO
+	cont=0;
+	archivo.open(nomArchRep.c_str(), ios::in);
+	archivo2.open(nomArchRep2.c_str(), ios::out);
+	while(getline(archivo,linea))	//BUSCAMOS LA LINEA DEL NOMBRE
+	{
+		if(linea==_nombre1) //CUANDO LA ENCUENTRE
+		{
+			archivo2<<linea<<endl;	//INGRESO ESA LINEA	
+			while(getline(archivo,linea) && cont==0) //BUSCO LA DE DISPONIBLES 
+			{
+				if(cont==0)
+				{
+					archivo2<<linea<<endl;	//LA METO AL ARCHIVO
+					archivo>>palabra;	archivo2<<palabra+" "; //SACO POR PALABRAS PRIMERO CANTIDAD:
+					archivo>>copias;	//DESPUES EL NUMERO DE COPIAD QUE SE GUARDA EN UN ENTERO
+					if(copias>0) copias-=1;	//SE LE RESTA UNO
+					ss<<copias;
+					copy=ss.str();
+					archivo2<<copy<<endl;	//SE CONVIERTE A STRING Y SE AGREGA AL ARCHIVO
+					ss.str("");
+				}
+				else archivo2<<linea<<endl;
+				cont++;
+			}
+		}
+		else archivo2<<linea<<endl;
+	}
+	archivo.close();
+	archivo2.close();
+	
+	//RENOMBRO MIS ARCHIVOS
+	if(_nombreArchivo=="Peliculas.txt")
+	{
+		remove(SET4);
+		rename(SET5,SET4);
+	}
+	if(_nombreArchivo=="Videojuegos.txt")
+	{
+		remove(SET6);
+		rename(SET7,SET6);
+	}
+	
+	//Y CAMBIO LAS CANTIDADES DE RENTADOS O VENDIDOS A MAS UNO
+	//SI ES UNA RENTA ME MODIFICA EL VALOR DE CANTIDADES EN RENTAS, AL IGUAL QUE COMO SE HIZO EL ANTERIOR PERO SE SUMA UNO EN VES DE RESTAR
+	if(_RorV=="Renta")
+	{
+		cont=0;
+		archivo.open(nomArchRep.c_str(), ios::in);
+		archivo2.open(nomArchRep2.c_str(), ios::out);
+		while(getline(archivo,linea))//
+		{
+			if(linea==_nombre1)
+			{
+				archivo2<<linea<<endl;
+				while(getline(archivo,linea) && cont<=2)
+				{
+					if(cont==2)
+					{
+						archivo2<<linea<<endl;
+						archivo>>palabra;	archivo2<<palabra+" ";
+						archivo>>copias;
+						if(copias<5) copias+=1;
+						ss<<copias;
+						copy=ss.str();
+						archivo2<<copy<<endl;
+						ss.str("");
+					}
+					else archivo2<<linea<<endl;
+					cont++;
+				}
+			}
+			else archivo2<<linea<<endl;
+		}
+		archivo.close();
+		archivo2.close();
+	}
+	
+	//AQUI LO MISMO PERO PARA LAS VENTAS
+	if(_RorV=="Venta")
+	{
+		cont=0;
+		archivo.open(nomArchRep.c_str(), ios::in);
+		archivo2.open(nomArchRep2.c_str(), ios::out);
+		while(getline(archivo,linea))
+		{
+			if(linea==_nombre1)
+			{
+				archivo2<<linea<<endl;
+				while(getline(archivo,linea) && cont<=4)
+				{
+					if(cont==4)
+					{
+						archivo2<<linea<<endl;
+						archivo>>palabra;	archivo2<<palabra+" ";
+						archivo>>copias;
+						if(copias<5) copias+=1;
+						ss<<copias;
+						copy=ss.str();
+						archivo2<<copy<<endl;
+						ss.str("");
+					}
+					else archivo2<<linea<<endl;
+					cont++;
+				}
+			}
+			else archivo2<<linea<<endl;
+		}
+		archivo.close();
+		archivo2.close();
+	}
+	
+	//VUELVO A RENOMBRAR MIS ARCHIVOS
+	if(_nombreArchivo=="Peliculas.txt")
+	{
+		remove(SET4);
+		rename(SET5,SET4);
+	}
+	if(_nombreArchivo=="Videojuegos.txt")
+	{
+		remove(SET6);
+		rename(SET7,SET6);
+	}
+}
