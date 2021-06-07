@@ -1,0 +1,152 @@
+/*Archivos Principales*/
+body /*Para poner el cuerpo de las paginas el color de relleno que queremos mostrar*/
+{
+	padding: 0;
+	margin-top: 0;
+}
+.Img-Body
+{
+	width: 100%;
+	height: 183%;
+	position: absolute;
+}
+.Titulos
+{
+	font-family: 'Lobster', cursive;
+	font-size: 4em;
+	color: #131313;
+	text-align: center;
+	margin: 0;
+	padding: 0;	
+}
+.Subtitulos
+{
+	font-family: 'Pacifico', cursive;
+	font-size: 2.5em;
+	color: #131313;
+	text-align: center;
+	margin: 0;
+	padding: 0;	
+}
+.Textos
+{
+	font-family: 'Pacifico', cursive;
+	font-size: 1.6em;
+	color: #131313;
+	text-align: center;
+	margin-top: 2%;
+	padding: 0;	
+}
+
+/*Archivos para el menu de la pagina*/
+.Menu /*Para poner el menu en cada hoja que se realize*/
+{
+	width: 85%;
+	display: table;
+	table-layout: fixed;
+	float: left;
+	margin: 0;
+	padding: 0;
+}	
+nav /*Para agregar estilos al menu*/
+{
+	width: 1000px;
+	margin-left: 12%;
+	margin-top: 1%;
+	overflow: hidden;
+	border-radius: 4px;
+	border-bottom: 1px solid #c72200;
+	background: #f3c5bd; /* Old browsers */
+
+	background: -moz-linear-gradient(top, #f3c5bd 0%, #f3c5bd 2%, #e86c57 50%, #ea2803 51%, #ff6600 75%, #c72200 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #f3c5bd 0%,#f3c5bd 2%,#e86c57 50%,#ea2803 51%,#ff6600 75%,#c72200 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #f3c5bd 0%,#f3c5bd 2%,#e86c57 50%,#ea2803 51%,#ff6600 75%,#c72200 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3c5bd', endColorstr='#c72200',GradientType=0 ); /* IE6-9 */
+}
+.Menu li /*Para poner estilos en la lista del menu*/
+{
+	display: table-cell;
+	overflow: hidden;
+	width: 100%; 
+	border-right: 1px solid #f3c5bd;
+	border-left: 1px solid rgba(255,102,0,.2);
+}
+.Menu li a /*Para cada elemento de la lista con elemento de tipo a*/
+{
+	font-family: 'Pacifico', cursive;
+	font-size: 20.5px;
+	color: #131313;
+	display: block;
+	text-align: center;
+	text-decoration: none;	
+	padding: 8px 0;
+}
+.Menu li:hover /*Para los botones del menu y para darle animacion cuando pasemos el mouse por los botones*/
+{
+	background:rgba(199,34,0,.3);
+	border-right: 1px solid transparent;
+	border-left: 1px solid transparent;
+	border-bottom: none;
+}
+.Barra /*Para acomodar la barra del buscador*/
+{
+	width: 15%;
+	font-family: 'Pacifico', cursive;
+	float: right;
+	padding: 10px 10px;
+	box-sizing: border-box;
+	position: relative;
+}
+.Barra input /*Para la entrada de texto de la barra del buscador*/
+{
+	width: 100%;
+	height: auto;
+	border-radius: 50px;
+	border: none;
+	border-bottom: 1px solid #c72200;
+	padding: 0px 8px 0px 18px;
+	height: 23px;
+	box-shadow: inset 0px 1px 3px rgba(10,8,9,.7);
+}
+
+/*Archivos para pagina de inicio*/
+.Inicio
+{
+	width: 1100px;
+	height: 600px;
+	margin-top: 0.5%;
+	position: relative;
+}
+.Iconos
+{
+	width: 75px;
+	margin: 0px;
+	padding: 0px;
+	position: relative;
+}
+
+/*Archivos para pagina de menu*/
+.Pasteles
+{
+	width: 200px;
+	height: 150px;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+.Pasteles_Cliente
+{
+	width: 50px;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+/*Archivos para la pagina de promociones*/
+.Promocion
+{
+	width: 500px;
+	height: 250px;
+	margin-top: 4%;
+	position: relative;
+}
