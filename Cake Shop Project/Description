@@ -1,1 +1,21 @@
-The project is developed in PHP
+The project is a website developed in PHP and MySQLi, about the sale of cakes.
+Processes performed by the system, customer view:
+- Customer registration to be able to buy cakes.
+- Shopping cart where you can add n quantity of cakes.
+- Form to add shipping address and payment method.
+
+Processes performed by the system, administrator view:
+- Add and/or delete new products.
+- Increase and/or decrease the stock of the warehouse.
+- Sales report by day, week or month.
+- Delete registered users.
+
+The system is implemented with: 
+- Classes and abstract classes 
+- Attributes and methods (public, private and protected) 
+- Objects 
+- Constructors in each class 
+- Stored procedures
+- Triggers
+- JavaScript form validations
+- Using Bootstrap for buttons and dynamic tables
