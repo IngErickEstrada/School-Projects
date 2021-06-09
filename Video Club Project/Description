@@ -7,7 +7,7 @@ Processes that the system performs:
 - Reports to validate the movies and/or video games that have been rented, sold or are available at the moment.
 - List of customers and employees that are registered in the system.
 
-The system is implemented in the system:
+The system is implemented with: 
 - Classes and abstract classes 
 - Use of dynamic memory 
 - Use of pointers 
