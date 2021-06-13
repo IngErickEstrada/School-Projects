@@ -1,1 +1,12 @@
+Game developed with Java from Android Studio
+It is the classic game of three in a row or better known as cat.
 
+It has programmed two functionalities: 
+1) Play against the machine created with AI, selecting three difficulties, easy, medium or hard.
+2) Play with a friend where both can select in which box to place the X or O.
+
+The system is implemented with: 
+- Classes
+- Attributes and Methods (public, private and protected) 
+- Objects 
+- Constructors in each class. 
