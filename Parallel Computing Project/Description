@@ -1,1 +1,13 @@
+Parallel Computing Project
+The project consists of making use of multithreading by connecting two computers, one being the server and the other the client.
+The project creates arrays of "n" by "n" defined by the user and filled automatically, where it shows how little time it can take with the use of multithreading.
+It allows us to enter the IP of the server and shows us if the connection has been created correctly before running the program.
 
+The system is implemented with: 
+- Classes
+- Attributes and Methods
+- Objects 
+- Constructors in each class. 
+- Own methods.
+- Parallel computing.
+- Multithreading.
