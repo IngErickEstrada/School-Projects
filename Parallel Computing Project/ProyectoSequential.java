@@ -1,9 +1,3 @@
-/*
-	Erick Antonio Estrada Vargas 17110079 7°M
-	Computacion Paralela
-	Proyecto Tercer Parcial
-*/
-
 public class ProyectoSequential{
 	private int row, rows, column, columns, z;
 	private double[][] result;
