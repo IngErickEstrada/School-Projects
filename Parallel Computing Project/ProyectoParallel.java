@@ -1,9 +1,3 @@
-/*
-    Erick Antonio Estrada Vargas 17110079 7°M
-    Computacion Paralela
-    Proyecto Tercer Parcial
-*/
-
 import java.io.*;
 import javax.swing.JTextArea;
 
