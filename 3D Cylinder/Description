@@ -1,1 +1,12 @@
+3D Cylinder Project with animation developed in Java
+The cylinder can be moved, left, right, up, down in positive and negative z-angle.
+It has an animation that expands and returns to its original shape as it moves vertically through the cylinder.
+It has meshing and draws the color of the mesh animation with two different colors, as well as two cubes that rotate around the center of the diameter, following the cylinder if it moves.
 
+The system is implemented with: 
+- Classes
+- Attributes and Methods
+- Objects 
+- Constructors in each class. 
+- Own methods.
+- Double Buffereo.
