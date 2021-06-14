@@ -1,8 +1,3 @@
-/*
-	Erick Antonio Estrada Vargas 17110079 6°M
-	Graficas por Computadora 2D y 3D
-	Proyecto 3er Parcial: Cilindro Animado (Perspectiva en Paralelo)
-*/
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
