@@ -1,10 +1,3 @@
-/*
- * Proyecto Tercer Parcial - Sistema Embebido
- * Erick Antonio Estrada Vargas 17110079 8°M
- * Materia: Tecnologias Emergentes
- * Profesor: Jose Francisco Perez Reyes
-*/
-
 //Librerias a utilizar
 #include "pitches.h"
 
