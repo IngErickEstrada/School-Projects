@@ -1,0 +1,10 @@
+Game developed with Java from Android Studio
+This is the game where you don't have to drop the ball on the ground, you have to keep the ball in the air for as long as possible, making it bounce.
+It has three difficulties to select, easy, medium or hard, where you increase the speed time of the ball falling to the ground the harder the difficulty is.
+
+The system is implemented with: 
+- Classes
+- Attributes and Methods
+- Objects
+- Constructors in each class.
+- Threads
