@@ -1,1 +1,10 @@
+Information Technology project developed on a Raspberry Pi 2B + with Python and Arduino.
+The aim of the project is to create an embedded system that allows us to control different processes making the Raspberry as a server 
+and sending the actions to the client that will be our Arduino.
 
+The project is developed in three parts:
+1) The first part is developed in HTML with CSS, which are views for the user to send the actions of the program, 
+turning on a light bulb in a bedroom, bathroom, kitchen, garage, etc, turn on the motion alarm or control the fan in the three programmed speeds. 
+2) The second part is developed in Python, which receives the actions sent from the HTML views, where it saves the action that will later be sent to the Arduino.
+3) And the third part is developed in Arduino where it reads the action sent from the server and interprets and makes the corresponding action 
+such as turning on or off a lamp, turn on a fan controlled with speeds or turn on an alarm with motion detector.
