@@ -1,1 +1,10 @@
+Expert system developed in java
+Validates facts within a defined atom chain
+Returns whether the fact exists within the atom chain or if it has changed.
 
+The system is implemented with: 
+- Classes
+- Attributes and Methods
+- Objects 
+- Constructors in each class. 
+- File handling 
