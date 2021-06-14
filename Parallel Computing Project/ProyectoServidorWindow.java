@@ -1,9 +1,3 @@
-/*
-	Erick Antonio Estrada Vargas 17110079 7°M
-	Computacion Paralela
-	Proyecto Tercer Parcial
-*/
-
 import java.awt.Font;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
