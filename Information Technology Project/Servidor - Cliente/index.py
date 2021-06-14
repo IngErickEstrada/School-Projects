@@ -1,8 +1,3 @@
-# Proyecto Tercer Parcial - Servidor
-# Erick Antonio Estrada Vargas 17110079 8°M
-# Materia: Tecnologias Emergentes
-# Profesor: Jose Francisco Perez Reyes
-
 from flask import Flask, render_template
 import serial
 
