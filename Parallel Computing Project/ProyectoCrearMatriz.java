@@ -1,9 +1,3 @@
-/*
-	Erick Antonio Estrada Vargas 17110079 7°M
-	Computacion Paralela
-	Proyecto Tercer Parcial
-*/
-
 public class ProyectoCrearMatriz{
 	public double[][] createdMatriz(double[][] m){
 		for(int x = 0; x < m.length; x++){
