@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <center>
+    <h1 class="display-4">Velocidad 2</h1>
+    
+    <img src='https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.clipartpanda.com%2Ffan-clipart-ceilingFan.png&f=1&nofb=1'
+      class="img-fluid", height="350", width="350">
+    
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('velocidad1') }}">Velocidad 1</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('velocidad2') }}">Velocidad 2</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('velocidad3') }}">Velocidad 3</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('apagar_vn1') }}">Apagar Ventilador</a>
+    </button>
+  </center>
+</div>
+{% endblock %}

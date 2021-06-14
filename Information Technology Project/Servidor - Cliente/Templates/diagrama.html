@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <center>
+    <h1 class="display-4">Diagrama de Casa</h1>
+  
+    <img src='https://o.quizlet.com/R0M-5V1.YC1RokU3DRnlcg_b.png'
+       class="img-fluid", height="800", width="800">
+  </center>
+</div>
+<div>
+  <center>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('recamara_principal') }}">Recamara Principal</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('recamara_secundaria') }}">Recamara Secundaria</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('bano') }}">Baño</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('cocina') }}">Cocina</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('comedor') }}">Comedor</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('sala') }}">Sala</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('cochera') }}">Cochera</a>
+    </button>
+  </center>
+</div>
+{% endblock %}

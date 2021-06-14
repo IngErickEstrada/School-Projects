@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <center>
+    <h1 class="display-4">Lampara Apagada</h1>
+    
+    <img src='https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2F1.bp.blogspot.com%2F-9yBBnDNPC3Q%2FT-wD0FH5eKI%2FAAAAAAAAVbA%2Fi0AMM0uBLxc%2Fs1600%2Flampara%2Cbombillo%2Bde%2Bluz%2Clight%2B(3).png&f=1&nofb=1'
+      class="img-fluid", height="200", width="200">
+    
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('encender_ch') }}">Encender Lampara</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('apagar_ch') }}">Apagar Lampara</a>
+    </button>
+  </center>
+</div>
+{% endblock %}

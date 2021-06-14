@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <center>
+    <h1 class="display-4">Lampara Encendida</h1>
+    
+    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Oxygen480-actions-help-hint.svg/600px-Oxygen480-actions-help-hint.svg.png'
+      class="img-fluid", height="300", width="300">
+    
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('encender_sl') }}">Encender Lampara</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('apagar_sl') }}">Apagar Lampara</a>
+    </button>
+  </center>
+</div>
+{% endblock %}

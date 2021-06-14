@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <center>
+    <h1 class="display-4">Cochera</h1>
+  
+    <img src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fst2.depositphotos.com%2F5590000%2F11978%2Fv%2F950%2Fdepositphotos_119786694-stock-illustration-cartoon-vector-illustration-interior-lamp.jpg&f=1&nofb=1'
+        class="img-fluid", height="300", width="300">
+  
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('encender_ch') }}">Encender Lampara</a>
+    </button>
+    <button type="button" class="btn btn-light">
+      <a href="{{ url_for('apagar_ch') }}">Apagar Lampara</a>
+    </button>
+    
+    <div> <h1></h1> </div>
+    
+    <div>
+      <img src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2Fp9mbndINRvI%2Fmaxresdefault.jpg&f=1&nofb=1'
+          class="img-fluid", height="320", width="320">
+  
+      <button type="button" class="btn btn-light">
+        <a href="{{ url_for('encender_alarma') }}">Encender Alarma</a>
+      </button>
+      <button type="button" class="btn btn-light">
+        <a href="{{ url_for('apagar_alarma') }}">Apagar Alarma</a>
+      </button>
+    </div>
+  </center>
+</div>
+{% endblock %}
