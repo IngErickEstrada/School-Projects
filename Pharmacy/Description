@@ -1,0 +1,12 @@
+Pharmacy
+The project consists of making a system that allows to add customers, suppliers, products as well as to manage these views being able to edit or delete records. 
+It has a section where you can register a sale and register the details of the purchase. 
+The system has a login system which depending on the permissions will enable all views or only some of them, 
+thus having the administrator profile and the employee profile.
+
+The system is implemented with: 
+- Classes
+- Attributes and Methods
+- Objects
+- Constructors in each class.
+- Views and Models
